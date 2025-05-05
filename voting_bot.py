@@ -27,8 +27,8 @@ logging.basicConfig(
 
 # List of vote targets
 SITES = [
-    {"name": "HR4", "url": "https://www.hr4.de/musik/die-ard-schlagerhitparade/abstimmung-zur-hr4-hitparade-v3,hr4-hitparade-abstimmung-100.html"},
-    # {"name": "MDR", "url": "https://www.mdr.de/sachsenradio/programm/deutschehitparade106.html"},
+    # {"name": "HR4", "url": "https://www.hr4.de/musik/die-ard-schlagerhitparade/abstimmung-zur-hr4-hitparade-v3,hr4-hitparade-abstimmung-100.html"},
+    {"name": "MDR", "url": "https://www.mdr.de/sachsenradio/programm/deutschehitparade106.html"},
     # {"name": "SWR", "url": "https://www.swr.de/schlager/voting-abstimmung-ard-schlagerhitparade-126.html"},
 ]
 
@@ -194,89 +194,79 @@ class VotingBot:
             self.debug_page(driver, "mdr-initial-load")
             logging.debug("Processing MDR voting page...")
 
-            self.handle_cookie_consent(driver)
-            self.debug_page(driver, "mdr-after-cookie")
+            # self.handle_cookie_consent(driver)
+            # self.debug_page(driver, "mdr-after-cookie")
 
             logging.debug("Looking for MDR voting elements...")
 
-            form_selectors = [
-                "form",
-                ".hipaForm",  # UPDATED: actual voting button
-            ]
-
-            form_element = None
-            for selector in form_selectors:
-                try:
-                    elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                    if elements:
-                        for element in elements:
-                            if element.find_elements(By.CSS_SELECTOR, ".okaytoggle"):  # UPDATED: actual voting button
-                                form_element = element
-                                break
-                    if form_element:
-                        break
-                except Exception:
-                    continue
-
-            voting_options = []
-            option_selectors = [
-                ".wertungspad .okaytoggle",  # UPDATED: actual voting button
-            ]
-
-            for selector in option_selectors:
-                try:
-                    elements = form_element.find_elements(By.CSS_SELECTOR, selector) if form_element else []
-                    if elements:
-                        voting_options = elements
-                        break
-                except Exception:
-                    continue
-
-            if not voting_options:
-                self.debug_page(driver, "mdr-no-options-found")
-                raise Exception("No voting options found")
-
-            random_option = random.choice(voting_options)
+            # Find all visible voting buttons
             try:
-                random_option.click()  # UPDATED: actual voting button
+                voting_buttons = driver.find_elements(By.CSS_SELECTOR, ".wertungspad button.okaytoggle")
             except Exception:
-                try:
-                    driver.execute_script("arguments[0].click();", random_option)  # UPDATED: actual voting button
-                except Exception:
-                    raise Exception("Could not select MDR voting option")
+                self.debug_page(driver, "mdr-options-error")
+                raise Exception("Error finding voting buttons")
+
+            if not voting_buttons:
+                self.debug_page(driver, "mdr-no-options-found")
+                raise Exception("No voting buttons found")
+
+            # Filter visible and clickable buttons
+            visible_buttons = [btn for btn in voting_buttons if btn.is_displayed()]
+            if not visible_buttons:
+                raise Exception("Voting buttons not visible or interactable")
+
+            random_button = random.choice(visible_buttons)
+
+            try:
+                driver.execute_script("arguments[0].scrollIntoView(true);", random_button)
+                time.sleep(0.5)
+                driver.execute_script("arguments[0].click();", random_button)
+            except Exception:
+                raise Exception("Could not click the voting button")
 
             self.debug_page(driver, "mdr-after-selection")
 
-            submit_selectors = [
-                "button.moreBtn.submitButton[type='submit']",  # UPDATED: actual voting button
-            ]
+            # --- ADDED: Fill the form ---
+            try:
+                names = ["Anna Schmidt", "Max Mustermann", "Lisa Müller"]
+                addresses = ["Berlin, Germany", "Leipzig, Germany", "Hamburg, Germany"]
+                emails = ["test1@example.com", "test2@example.com", "test3@example.com"]
+                songs = ["Song A", "Song B", "Song C"]
 
-            for selector in submit_selectors:
-                try:
-                    elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                    if elements:
-                        try:
-                            elements[0].click()  # UPDATED: actual voting button
-                        except Exception:
-                            driver.execute_script("arguments[0].click();", elements[0])  # UPDATED: actual voting button
-                        break
-                except Exception:
-                    continue
+                driver.find_element(By.NAME, "ff1").send_keys(random.choice(names))
+                driver.find_element(By.NAME, "ff2").send_keys(random.choice(addresses))
+                driver.find_element(By.NAME, "ff3").send_keys(random.choice(emails))
+                driver.find_element(By.NAME, "ff4").send_keys(random.choice(songs))
+
+                self.debug_page(driver, "mdr-after-form-fill")
+            except Exception as e:
+                self.debug_page(driver, "mdr-form-fill-error")
+                logging.error("Error filling out the MDR form", exc_info=True)
+                raise Exception("Form fields not found or not fillable")
+
+            # --- END ADDED ---
+
+            # Submit button 
+            try:
+                submit_button = driver.find_element(By.CSS_SELECTOR, "button[name='Absenden']")
+                driver.execute_script("arguments[0].scrollIntoView(true);", submit_button)
+                time.sleep(0.5)
+                driver.execute_script("arguments[0].click();", submit_button)
+            except Exception:
+                self.debug_page(driver, "mdr-submit-failed")
+                raise Exception("Submit button not clickable")
 
             self.debug_page(driver, "mdr-after-submit")
             time.sleep(3)
-            self.debug_page(driver, "mdr-final")
 
-            confirmation_selectors = [
-                ".HitparadeStyle__HitparadeFormBeforeStyled-sc-hthgex-3",  # UPDATED: actual voting button
-            ]
-
-            for selector in confirmation_selectors:
-                try:
-                    if driver.find_elements(By.CSS_SELECTOR, selector):
-                        return True
-                except Exception:
-                    continue
+            # Confirmation check: if no buttons remain or a confirmation block appears
+            try:
+                remaining_buttons = driver.find_elements(By.CSS_SELECTOR, ".wertungspad button.okaytoggle")
+                if not remaining_buttons:
+                    self.debug_page(driver, "mdr-confirmed")
+                    return True
+            except Exception:
+                pass
 
             return False
 

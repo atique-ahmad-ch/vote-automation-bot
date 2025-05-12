@@ -1,6 +1,7 @@
 import logging
 import threading
 import time
+from faker import Faker
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -10,6 +11,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 import schedule
 import random
 import os
+
+fake = Faker('de_DE')  # German locale for relevant data
 
 # Configure logging with more details and file output
 log_dir = "logs"
@@ -27,7 +30,7 @@ logging.basicConfig(
 
 # List of vote targets
 SITES = [
-    # {"name": "HR4", "url": "https://www.hr4.de/musik/die-ard-schlagerhitparade/abstimmung-zur-hr4-hitparade-v3,hr4-hitparade-abstimmung-100.html"},
+    {"name": "HR4", "url": "https://www.hr4.de/musik/die-ard-schlagerhitparade/abstimmung-zur-hr4-hitparade-v3,hr4-hitparade-abstimmung-100.html"},
     {"name": "MDR", "url": "https://www.mdr.de/sachsenradio/programm/deutschehitparade106.html"},
     # {"name": "SWR", "url": "https://www.swr.de/schlager/voting-abstimmung-ard-schlagerhitparade-126.html"},
 ]
@@ -228,15 +231,27 @@ class VotingBot:
 
             # --- ADDED: Fill the form ---
             try:
-                names = ["Anna Schmidt", "Max Mustermann", "Lisa Müller"]
-                addresses = ["Berlin, Germany", "Leipzig, Germany", "Hamburg, Germany"]
-                emails = ["test1@example.com", "test2@example.com", "test3@example.com"]
-                songs = ["Song A", "Song B", "Song C"]
+                # names = ["Anna Schmidt", "Max Mustermann", "Lisa Müller"]
+                # addresses = ["Berlin, Germany", "Leipzig, Germany", "Hamburg, Germany"]
+                # emails = ["test1@example.com", "test2@example.com", "test3@example.com"]
+                # songs = ["Song A", "Song B", "Song C"]
 
-                driver.find_element(By.NAME, "ff1").send_keys(random.choice(names))
-                driver.find_element(By.NAME, "ff2").send_keys(random.choice(addresses))
-                driver.find_element(By.NAME, "ff3").send_keys(random.choice(emails))
-                driver.find_element(By.NAME, "ff4").send_keys(random.choice(songs))
+                # driver.find_element(By.NAME, "ff1").send_keys(random.choice(names))
+                # driver.find_element(By.NAME, "ff2").send_keys(random.choice(addresses))
+                # driver.find_element(By.NAME, "ff3").send_keys(random.choice(emails))
+                # driver.find_element(By.NAME, "ff4").send_keys(random.choice(songs))
+
+                # Generate fake data
+                name = fake.name()
+                address = fake.address().replace('\n', ', ')  # Clean line breaks
+                email = fake.email()
+                # songs = ["Song A", "Song B", "Song C"]
+
+                # Use Selenium to input data
+                driver.find_element(By.NAME, "ff1").send_keys(name)
+                driver.find_element(By.NAME, "ff2").send_keys(address)
+                driver.find_element(By.NAME, "ff3").send_keys(email)
+                # driver.find_element(By.NAME, "ff4").send_keys(random.choice(songs))
 
                 self.debug_page(driver, "mdr-after-form-fill")
             except Exception as e:

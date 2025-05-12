@@ -14,4 +14,14 @@ Install the required Python packages:
 
 ```bash
 pip install -r requirements.txt
+```
 
+Run the bot with:
+```bash
+python voting_bot.py
+```
+
+If using Python 3:
+```bash
+python3 voting_bot.py
+```

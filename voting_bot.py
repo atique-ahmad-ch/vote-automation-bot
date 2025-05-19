@@ -30,9 +30,9 @@ logging.basicConfig(
 
 # List of vote targets
 SITES = [
-    {"name": "HR4", "url": "https://www.hr4.de/musik/die-ard-schlagerhitparade/abstimmung-zur-hr4-hitparade-v3,hr4-hitparade-abstimmung-100.html"},
-    {"name": "MDR", "url": "https://www.mdr.de/sachsenradio/programm/deutschehitparade106.html"},
-    # {"name": "SWR", "url": "https://www.swr.de/schlager/voting-abstimmung-ard-schlagerhitparade-126.html"},
+    # {"name": "HR4", "url": "https://www.hr4.de/musik/die-ard-schlagerhitparade/abstimmung-zur-hr4-hitparade-v3,hr4-hitparade-abstimmung-100.html"},
+    # {"name": "MDR", "url": "https://www.mdr.de/sachsenradio/programm/deutschehitparade106.html"},
+    {"name": "SWR", "url": "https://www.swr.de/schlager/voting-abstimmung-ard-schlagerhitparade-136.html"},
 ]
 
 class VotingBot:
@@ -290,6 +290,64 @@ class VotingBot:
             self.debug_page(driver, "mdr-error")
             return False
 
+    def vote_on_swr(self, driver):
+        try:
+            print("Locating voting checkboxes on SWR site...")
+            checkboxes = driver.find_elements(By.CSS_SELECTOR, "input[type='checkbox'][name='votingitem']")
+            if len(checkboxes) < 3:
+                raise Exception(f"Expected at least 3 voting checkboxes, found {len(checkboxes)}")
+
+            selected = random.sample(checkboxes, 3)
+            for box in selected:
+                driver.execute_script("arguments[0].scrollIntoView(true);", box)
+                driver.execute_script("arguments[0].click();", box)
+
+
+             # --- ADDED: Fill the form ---
+            try:
+                # Generate fake data
+                name1 = fake.name()
+                name2 = fake.name()
+                email = fake.email()
+                # Use Selenium to input data
+                driver.find_element(By.NAME, "formField_vorname").send_keys(name1)
+                driver.find_element(By.NAME, "formField_nachname").send_keys(name2)
+                driver.find_element(By.NAME, "formField_email").send_keys(email)
+                self.debug_page(driver, "swr-after-form-fill")
+            except Exception as e:
+                self.debug_page(driver, "mdr-form-fill-error")
+                logging.error("Error filling out the swr form", exc_info=True)
+                raise Exception("Form fields not found or not fillable")
+
+            checkbox = driver.find_elements(By.CSS_SELECTOR, "input[type='checkbox'][name='formField_teilnahmebedingungen']")[0]
+            driver.execute_script("arguments[0].scrollIntoView(true);", checkbox)
+            driver.execute_script("arguments[0].click();", checkbox)
+
+            print("Looking for submit button...")
+            submit_button = driver.find_element(By.CSS_SELECTOR, "form button[type='submit'], form input[type='submit']")
+            driver.execute_script("arguments[0].scrollIntoView(true);", submit_button)
+            time.sleep(1)
+
+            print("Waiting for manual CAPTCHA (if required)...")
+            input("Solve CAPTCHA manually and press Enter to continue...")
+
+            print("Submitting form...")
+            driver.execute_script("arguments[0].click();", submit_button)
+
+            time.sleep(3)  # wait for confirmation
+
+            page_text = driver.page_source.lower()
+            if "danke" in page_text or "ihre stimme wurde gezählt" in page_text:
+                print("Vote successful.")
+                return True
+
+            print("Vote may not have been successful.")
+            return False
+
+        except Exception as e:
+            print(f"SWR Voting failed: {e}")
+            return False
+
     def vote_on_site(self, site):
         logging.info(f"Starting vote on {site['name']}")
         driver = self.setup_browser()
@@ -307,6 +365,8 @@ class VotingBot:
                 success = self.vote_on_hr4(driver)
             elif site["name"] == "MDR":
                 success = self.vote_on_mdr(driver)
+            elif site["name"] == "SWR":
+                success = self.vote_on_swr(driver)
             else:
                 logging.warning(f"No specific voting logic for site: {site['name']}")
                 success = False

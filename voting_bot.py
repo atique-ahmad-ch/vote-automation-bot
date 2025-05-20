@@ -8,9 +8,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+import undetected_chromedriver as uc
 import schedule
 import random
 import os
+
+# Launch browser in undetected mode
+options = uc.ChromeOptions()
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-blink-features=AutomationControlled")
+driver = uc.Chrome(options=options)
+
 
 fake = Faker('de_DE')  # German locale for relevant data
 
@@ -48,19 +56,20 @@ class VotingBot:
         logging.debug("VotingBot initialized")
 
     def setup_browser(self):
-        logging.debug("Setting up browser...")
-        options = webdriver.ChromeOptions()
+        logging.debug("Setting up undetected browser...")
         
-        # Uncomment the line below if you want to see the browser (for debugging)
+        options = uc.ChromeOptions()
+        
+        # Uncomment to run headless
         # options.add_argument("--headless=new")
-        
+
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--allow-file-access-from-files")
         options.add_argument("--disable-notifications")
-        options.add_argument("--window-size=1920,1080")  # Set window size
-        
-        # Add a random user agent to avoid detection
+        options.add_argument("--window-size=1920,1080")
+
+        # Random user agent to reduce bot detection
         user_agents = [
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.55 Safari/537.36",
@@ -71,16 +80,14 @@ class VotingBot:
         logging.debug(f"Using user agent: {selected_agent}")
 
         try:
-            logging.debug("Installing ChromeDriver...")
-            service = Service(ChromeDriverManager().install())
-            logging.debug("Creating Chrome WebDriver instance...")
-            driver = webdriver.Chrome(service=service, options=options)
+            logging.debug("Launching undetected Chrome WebDriver...")
+            driver = uc.Chrome(options=options, use_subprocess=True)
             logging.debug("Browser setup successful")
             return driver
         except Exception as e:
-            logging.error(f"Error setting up browser: {e}", exc_info=True)
+            logging.error(f"Error setting up undetected browser: {e}", exc_info=True)
             return None
-
+        
     def take_screenshot(self, driver, name):
         """Take a screenshot and save it with a timestamp"""
         timestamp = time.strftime("%Y%m%d-%H%M%S")
@@ -303,7 +310,7 @@ class VotingBot:
                 driver.execute_script("arguments[0].click();", box)
 
 
-             # --- ADDED: Fill the form ---
+            # --- ADDED: Fill the form ---
             try:
                 # Generate fake data
                 name1 = fake.name()
@@ -321,28 +328,32 @@ class VotingBot:
 
             checkbox = driver.find_elements(By.CSS_SELECTOR, "input[type='checkbox'][name='formField_teilnahmebedingungen']")[0]
             driver.execute_script("arguments[0].scrollIntoView(true);", checkbox)
+            time.sleep(0.5)  # Small wait before clicking
             driver.execute_script("arguments[0].click();", checkbox)
+            time.sleep(1)
 
-            print("Looking for submit button...")
-            submit_button = driver.find_element(By.CSS_SELECTOR, "form button[type='submit'], form input[type='submit']")
+            try:
+                # Use more specific selector if possible
+                submit_button = driver.find_element(By.ID, "formSubmitButton")
+            except:
+                # Fallback to generic selector
+                submit_button = driver.find_element(By.CSS_SELECTOR, "form button[type='submit'], form input[type='submit']")
+
             driver.execute_script("arguments[0].scrollIntoView(true);", submit_button)
             time.sleep(1)
 
-            print("Waiting for manual CAPTCHA (if required)...")
-            input("Solve CAPTCHA manually and press Enter to continue...")
-
             print("Submitting form...")
             driver.execute_script("arguments[0].click();", submit_button)
+            time.sleep(3)  # Wait for the page to process the submission
 
-            time.sleep(3)  # wait for confirmation
-
+            # Validate the success message
             page_text = driver.page_source.lower()
-            if "danke" in page_text or "ihre stimme wurde gezählt" in page_text:
+            if "vielen dank für ihre stimme" in page_text or "danke" in page_text:
                 print("Vote successful.")
                 return True
-
-            print("Vote may not have been successful.")
-            return False
+            else:
+                print("Vote not confirmed.")
+                return False
 
         except Exception as e:
             print(f"SWR Voting failed: {e}")

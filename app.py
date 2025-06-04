@@ -13,6 +13,8 @@ import schedule
 import random
 import os
 
+import streamlit as st
+
 # Launch browser in undetected mode
 options = uc.ChromeOptions()
 options.add_argument("--no-sandbox")
@@ -37,7 +39,7 @@ logging.basicConfig(
 )
 
 # List of vote targets
-SITES = [
+CHOICE_SITES = [
     {"name": "HR4", "url": "https://www.hr4.de/musik/die-ard-schlagerhitparade/abstimmung-zur-hr4-hitparade-v3,hr4-hitparade-abstimmung-100.html"},
     {"name": "MDR", "url": "https://www.mdr.de/sachsenradio/programm/deutschehitparade106.html"},
     {"name": "SWR", "url": "https://www.swr.de/schlager/voting-abstimmung-ard-schlagerhitparade-136.html"},
@@ -313,8 +315,8 @@ class VotingBot:
             # --- ADDED: Fill the form ---
             try:
                 # Generate fake data
-                name1 = fake.first_name()
-                name2 = fake.last_name()
+                name1 = fake.name()
+                name2 = fake.name()
                 email = fake.email()
                 # Use Selenium to input data
                 driver.find_element(By.NAME, "formField_vorname").send_keys(name1)
@@ -439,36 +441,109 @@ class VotingBot:
         logging.info(f"Final stats: {self.get_stats()}")
         logging.info("=============================================")
 
-def run_bot():
-    logging.info("=============================")
-    logging.info("Starting Voting Bot")
-    logging.info("=============================")
+# def run_bot():
+#     logging.info("=============================")
+#     logging.info("Starting Voting Bot")
+#     logging.info("=============================")
     
-    bot = VotingBot()
+#     bot = VotingBot()
 
-    # Ask for voting interval
-    try:
-        interval = 2 #int(input("Enter voting interval in minutes (default 30): ") or "30")
-    except ValueError:
-        interval = 30
-        logging.info("Invalid input, using default 30 minutes")
+#     # Ask for voting interval
+#     try:
+#         interval = 2 #int(input("Enter voting interval in minutes (default 30): ") or "30")
+#     except ValueError:
+#         interval = 30
+#         logging.info("Invalid input, using default 30 minutes")
 
-    logging.info(f"Starting bot with {interval} minute intervals")
+#     logging.info(f"Starting bot with {interval} minute intervals")
     
-    voting_thread = threading.Thread(target=bot.start_scheduled_voting, args=(interval,), daemon=True)
-    voting_thread.start()
+#     voting_thread = threading.Thread(target=bot.start_scheduled_voting, args=(interval,), daemon=True)
+#     voting_thread.start()
 
-    print("=============================================")
-    print("Bot is running. Press Ctrl+C to stop.")
-    print("Check the logs directory for detailed logs.")
-    print("Check the screenshots directory for visual debugging.")
-    print("=============================================")
+#     print("=============================================")
+#     print("Bot is running. Press Ctrl+C to stop.")
+#     print("Check the logs directory for detailed logs.")
+#     print("Check the screenshots directory for visual debugging.")
+#     print("=============================================")
     
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        bot.stop()
+#     try:
+#         while True:
+#             time.sleep(1)
+#     except KeyboardInterrupt:
+#         bot.stop()
 
-if __name__ == "__main__":
-    run_bot()
+# if __name__ == "__main__":
+#     run_bot()
+
+
+
+# -------- Streamlit UI starts here --------
+
+st.title("🗳️ Automated Voting Bot")
+
+st.subheader("Select Sites to Vote")
+
+# Multiselect for sites
+selected_names = st.multiselect(
+    "Choose one or more sites:",
+    options=[site["name"] for site in CHOICE_SITES]
+)
+
+# Filter selected sites into SITES list
+SITES = [site for site in CHOICE_SITES if site["name"] in selected_names]
+st.write("Selected Sites:", SITES)
+
+# Initialize session state for bot and thread
+if "bot" not in st.session_state:
+    st.session_state.bot = None
+if "thread" not in st.session_state:
+    st.session_state.thread = None
+
+interval = st.number_input("Voting interval (minutes)", min_value=1, max_value=120, value=30, step=1)
+
+col1, col2 = st.columns(2)
+
+if col1.button("▶️ Start Bot"):
+    if not st.session_state.bot:
+        if not SITES:
+            st.warning("Please select at least one site to vote on.")
+        else:
+            bot = VotingBot()
+            st.session_state.bot = bot
+            
+            # Pass SITES to bot if needed here
+            # bot.set_sites(SITES)  # Add this method in your VotingBot if you want
+            
+            st.session_state.thread = threading.Thread(
+                target=bot.start_scheduled_voting, args=(interval,), daemon=True
+            )
+            st.session_state.thread.start()
+            st.success("Bot started!")
+
+if col2.button("⛔ Stop Bot"):
+    if st.session_state.bot:
+        st.session_state.bot.stop()
+        stats = st.session_state.bot.get_stats()
+        st.subheader(" Final Voting Stats")
+        st.write(stats)
+        st.session_state.bot = None
+        st.success("Bot stopped.")
+
+# Stats placeholder for live updates
+stats_placeholder = st.empty()
+
+# Use Streamlit's built-in autorefresh to update every 10 seconds without blocking
+
+if st.session_state.bot:
+    stats = st.session_state.bot.get_stats()
+    
+    if stats["total_attempts"] > 0:
+        with stats_placeholder.container():
+            st.subheader(" Current Voting Stats")
+            st.write(stats)
+    else:
+        with stats_placeholder.container():
+            st.info("Bot is running but no votes yet.")
+else:
+    with stats_placeholder.container():
+        st.info("Bot is not running.")

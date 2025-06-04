@@ -315,8 +315,8 @@ class VotingBot:
             # --- ADDED: Fill the form ---
             try:
                 # Generate fake data
-                name1 = fake.name()
-                name2 = fake.name()
+                name1 = fake.first_name()
+                name2 = fake.last_name()
                 email = fake.email()
                 # Use Selenium to input data
                 driver.find_element(By.NAME, "formField_vorname").send_keys(name1)

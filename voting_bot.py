@@ -2,23 +2,24 @@ import logging
 import threading
 import time
 from faker import Faker
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
 import schedule
 import random
 import os
 
-# Launch browser in undetected mode
 options = uc.ChromeOptions()
+options.add_argument("--headless=new")  # Use new headless mode (better for automation)
 options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--disable-blink-features=AutomationControlled")
-driver = uc.Chrome(options=options)
+options.add_argument("--window-size=1920,1080")  # Optional for layout consistency
 
+# Force matching ChromeDriver version (adjust if needed)
+driver = uc.Chrome(options=options, version_main=137, headless=True )
+print("Headless:", driver.execute_script("return navigator.webdriver"))
 
 fake = Faker('de_DE')  # German locale for relevant data
 
@@ -38,9 +39,9 @@ logging.basicConfig(
 
 # List of vote targets
 SITES = [
-    {"name": "HR4", "url": "https://www.hr4.de/musik/die-ard-schlagerhitparade/abstimmung-zur-hr4-hitparade-v3,hr4-hitparade-abstimmung-100.html"},
+    # {"name": "HR4", "url": "https://www.hr4.de/musik/die-ard-schlagerhitparade/abstimmung-zur-hr4-hitparade-v3,hr4-hitparade-abstimmung-100.html"},
     {"name": "MDR", "url": "https://www.mdr.de/sachsenradio/programm/deutschehitparade106.html"},
-    {"name": "SWR", "url": "https://www.swr.de/schlager/voting-abstimmung-ard-schlagerhitparade-136.html"},
+    # {"name": "SWR", "url": "https://www.swr.de/schlager/voting-abstimmung-ard-schlagerhitparade-136.html"},
 ]
 
 class VotingBot:
@@ -81,7 +82,12 @@ class VotingBot:
 
         try:
             logging.debug("Launching undetected Chrome WebDriver...")
-            driver = uc.Chrome(options=options, use_subprocess=True)
+            driver = uc.Chrome(
+                options=options,
+                version_main=137,       # Match your installed Chrome version
+                headless=True,          # Ensures actual headless behavior
+                use_subprocess=True     # Optional; can help isolate the browser process
+            )            
             logging.debug("Browser setup successful")
             return driver
         except Exception as e:

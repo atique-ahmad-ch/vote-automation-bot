@@ -1,0 +1,108 @@
+2025-07-05 17:25:02,085 - INFO - =============================
+2025-07-05 17:25:02,085 - INFO - Starting Voting Bot
+2025-07-05 17:25:02,085 - INFO - =============================
+2025-07-05 17:25:02,085 - DEBUG - VotingBot initialized
+2025-07-05 17:25:02,085 - INFO - Starting bot with 2 minute intervals
+2025-07-05 17:25:02,086 - INFO - Setting up scheduled voting every 2 minutes
+2025-07-05 17:25:02,086 - INFO - =============================================
+2025-07-05 17:25:02,086 - INFO - Starting voting cycle #1
+2025-07-05 17:25:02,087 - INFO - =============================================
+2025-07-05 17:25:02,087 - INFO - Starting vote on MDR
+2025-07-05 17:25:02,087 - DEBUG - Setting up undetected browser...
+2025-07-05 17:25:02,087 - DEBUG - Using user agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36
+2025-07-05 17:25:02,087 - DEBUG - Launching undetected Chrome WebDriver...
+2025-07-05 17:25:02,087 - DEBUG - getting release number from /last-known-good-versions-with-downloads.json
+2025-07-05 17:25:02,255 - DEBUG - downloading from https://storage.googleapis.com/chrome-for-testing-public/138.0.7204.92/mac-x64/chromedriver-mac-x64.zip
+2025-07-05 17:25:22,809 - DEBUG - unzipping /var/folders/nw/tdhhbz510tv40212t1hqfwn00000gn/T/tmpgy7wogfj
+2025-07-05 17:25:22,912 - INFO - patching driver executable /Users/ebricks/Library/Application Support/undetected_chromedriver/undetected_chromedriver
+2025-07-05 17:25:22,925 - DEBUG - found block:
+b'{window.cdc_adoQpoasnfa76pfcZLmcfl_Array = window.Array;window.cdc_adoQpoasnfa76pfcZLmcfl_Object = window.Object;window.cdc_adoQpoasnfa76pfcZLmcfl_Promise = window.Promise;window.cdc_adoQpoasnfa76pfcZLmcfl_Proxy = window.Proxy;window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol = window.Symbol;window.cdc_adoQpoasnfa76pfcZLmcfl_JSON = window.JSON;window.cdc_adoQpoasnfa76pfcZLmcfl_Window = window.Window;}'
+replacing with:
+b'{console.log("undetected chromedriver 1337!")}                                                                                                                                                                                                                                                                                                                                                             '
+2025-07-05 17:25:22,927 - DEBUG - patching took us 0.01 seconds
+2025-07-05 17:25:22,937 - DEBUG - Skipping Selenium Manager; path to chrome driver specified in Service class: /Users/ebricks/Library/Application Support/undetected_chromedriver/undetected_chromedriver
+2025-07-05 17:25:22,941 - DEBUG - Started executable: `/Users/ebricks/Library/Application Support/undetected_chromedriver/undetected_chromedriver` in a child process with pid: 22414 using 0 to output -3
+2025-07-05 17:25:24,876 - DEBUG - POST http://localhost:50856/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'chrome', 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'goog:chromeOptions': {'extensions': [], 'binary': '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', 'args': ['--no-sandbox', '--disable-dev-shm-usage', '--allow-file-access-from-files', '--disable-notifications', '--window-size=1920,1080', 'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36', '--remote-debugging-host=127.0.0.1', '--remote-debugging-port=50855', '--user-data-dir=/var/folders/nw/tdhhbz510tv40212t1hqfwn00000gn/T/tmpbs3fefgk', '--lang=en-US', '--no-default-browser-check', '--no-first-run', '--no-sandbox', '--test-type', '--window-size=1920,1080', '--start-maximized', '--no-sandbox', '--log-level=0'], 'debuggerAddress': '127.0.0.1:50855'}}}}
+2025-07-05 17:25:24,877 - DEBUG - Starting new HTTP connection (1): localhost:50856
+2025-07-05 17:25:24,908 - DEBUG - http://localhost:50856 "POST /session HTTP/1.1" 500 0
+2025-07-05 17:25:24,908 - DEBUG - Remote response: status=500 | data={"value":{"error":"session not created","message":"session not created: cannot connect to chrome at 127.0.0.1:50855\nfrom session not created: This version of ChromeDriver only supports Chrome version 138\nCurrent browser version is 137.0.7151.122","stacktrace":"0   undetected_chromedriver             0x0000000102931318 undetected_chromedriver + 6148888\n1   undetected_chromedriver             0x00000001029288ca undetected_chromedriver + 6113482\n2   undetected_chromedriver             0x00000001023b9e10 undetected_chromedriver + 417296\n3   undetected_chromedriver             0x00000001023fb006 undetected_chromedriver + 684038\n4   undetected_chromedriver             0x00000001023f9f74 undetected_chromedriver + 679796\n5   undetected_chromedriver             0x00000001023ef239 undetected_chromedriver + 635449\n6   undetected_chromedriver             0x000000010244011a undetected_chromedriver + 966938\n7   undetected_chromedriver             0x000000010243f7a6 undetected_chromedriver + 964518\n8   undetected_chromedriver             0x0000000102431a93 undetected_chromedriver + 907923\n9   undetected_chromedriver             0x00000001023fe0f7 undetected_chromedriver + 696567\n10  undetected_chromedriver             0x00000001023fed61 undetected_chromedriver + 699745\n11  undetected_chromedriver             0x00000001028ee260 undetected_chromedriver + 5874272\n12  undetected_chromedriver             0x00000001028f2299 undetected_chromedriver + 5890713\n13  undetected_chromedriver             0x00000001028ca032 undetected_chromedriver + 5726258\n14  undetected_chromedriver             0x00000001028f2c0f undetected_chromedriver + 5893135\n15  undetected_chromedriver             0x00000001028b8d24 undetected_chromedriver + 5655844\n16  undetected_chromedriver             0x0000000102915df8 undetected_chromedriver + 6036984\n17  undetected_chromedriver             0x0000000102915fc0 undetected_chromedriver + 6037440\n18  undetected_chromedriver             0x0000000102928461 undetected_chromedriver + 6112353\n19  libsystem_pthread.dylib             0x00007ff81afdadf1 _pthread_start + 99\n20  libsystem_pthread.dylib             0x00007ff81afd6857 thread_start + 15\n"}} | headers=HTTPHeaderDict({'Content-Length': '2201', 'Content-Type': 'application/json; charset=utf-8', 'cache-control': 'no-cache'})
+2025-07-05 17:25:24,908 - DEBUG - Finished Request
+2025-07-05 17:25:24,933 - ERROR - Error setting up undetected browser: Message: session not created: cannot connect to chrome at 127.0.0.1:50855
+from session not created: This version of ChromeDriver only supports Chrome version 138
+Current browser version is 137.0.7151.122
+Stacktrace:
+0   undetected_chromedriver             0x0000000102931318 undetected_chromedriver + 6148888
+1   undetected_chromedriver             0x00000001029288ca undetected_chromedriver + 6113482
+2   undetected_chromedriver             0x00000001023b9e10 undetected_chromedriver + 417296
+3   undetected_chromedriver             0x00000001023fb006 undetected_chromedriver + 684038
+4   undetected_chromedriver             0x00000001023f9f74 undetected_chromedriver + 679796
+5   undetected_chromedriver             0x00000001023ef239 undetected_chromedriver + 635449
+6   undetected_chromedriver             0x000000010244011a undetected_chromedriver + 966938
+7   undetected_chromedriver             0x000000010243f7a6 undetected_chromedriver + 964518
+8   undetected_chromedriver             0x0000000102431a93 undetected_chromedriver + 907923
+9   undetected_chromedriver             0x00000001023fe0f7 undetected_chromedriver + 696567
+10  undetected_chromedriver             0x00000001023fed61 undetected_chromedriver + 699745
+11  undetected_chromedriver             0x00000001028ee260 undetected_chromedriver + 5874272
+12  undetected_chromedriver             0x00000001028f2299 undetected_chromedriver + 5890713
+13  undetected_chromedriver             0x00000001028ca032 undetected_chromedriver + 5726258
+14  undetected_chromedriver             0x00000001028f2c0f undetected_chromedriver + 5893135
+15  undetected_chromedriver             0x00000001028b8d24 undetected_chromedriver + 5655844
+16  undetected_chromedriver             0x0000000102915df8 undetected_chromedriver + 6036984
+17  undetected_chromedriver             0x0000000102915fc0 undetected_chromedriver + 6037440
+18  undetected_chromedriver             0x0000000102928461 undetected_chromedriver + 6112353
+19  libsystem_pthread.dylib             0x00007ff81afdadf1 _pthread_start + 99
+20  libsystem_pthread.dylib             0x00007ff81afd6857 thread_start + 15
+Traceback (most recent call last):
+  File "/Users/ebricks/Desktop/vote-automation-bot/voting_bot.py", line 84, in setup_browser
+    driver = uc.Chrome(options=options, use_subprocess=True)
+  File "/opt/anaconda3/envs/voting_bot/lib/python3.10/site-packages/undetected_chromedriver/__init__.py", line 466, in __init__
+    super(Chrome, self).__init__(
+  File "/opt/anaconda3/envs/voting_bot/lib/python3.10/site-packages/selenium/webdriver/chrome/webdriver.py", line 45, in __init__
+    super().__init__(
+  File "/opt/anaconda3/envs/voting_bot/lib/python3.10/site-packages/selenium/webdriver/chromium/webdriver.py", line 66, in __init__
+    super().__init__(command_executor=executor, options=options)
+  File "/opt/anaconda3/envs/voting_bot/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 250, in __init__
+    self.start_session(capabilities)
+  File "/opt/anaconda3/envs/voting_bot/lib/python3.10/site-packages/undetected_chromedriver/__init__.py", line 724, in start_session
+    super(selenium.webdriver.chrome.webdriver.WebDriver, self).start_session(
+  File "/opt/anaconda3/envs/voting_bot/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 342, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+  File "/opt/anaconda3/envs/voting_bot/lib/python3.10/site-packages/selenium/webdriver/remote/webdriver.py", line 429, in execute
+    self.error_handler.check_response(response)
+  File "/opt/anaconda3/envs/voting_bot/lib/python3.10/site-packages/selenium/webdriver/remote/errorhandler.py", line 232, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: cannot connect to chrome at 127.0.0.1:50855
+from session not created: This version of ChromeDriver only supports Chrome version 138
+Current browser version is 137.0.7151.122
+Stacktrace:
+0   undetected_chromedriver             0x0000000102931318 undetected_chromedriver + 6148888
+1   undetected_chromedriver             0x00000001029288ca undetected_chromedriver + 6113482
+2   undetected_chromedriver             0x00000001023b9e10 undetected_chromedriver + 417296
+3   undetected_chromedriver             0x00000001023fb006 undetected_chromedriver + 684038
+4   undetected_chromedriver             0x00000001023f9f74 undetected_chromedriver + 679796
+5   undetected_chromedriver             0x00000001023ef239 undetected_chromedriver + 635449
+6   undetected_chromedriver             0x000000010244011a undetected_chromedriver + 966938
+7   undetected_chromedriver             0x000000010243f7a6 undetected_chromedriver + 964518
+8   undetected_chromedriver             0x0000000102431a93 undetected_chromedriver + 907923
+9   undetected_chromedriver             0x00000001023fe0f7 undetected_chromedriver + 696567
+10  undetected_chromedriver             0x00000001023fed61 undetected_chromedriver + 699745
+11  undetected_chromedriver             0x00000001028ee260 undetected_chromedriver + 5874272
+12  undetected_chromedriver             0x00000001028f2299 undetected_chromedriver + 5890713
+13  undetected_chromedriver             0x00000001028ca032 undetected_chromedriver + 5726258
+14  undetected_chromedriver             0x00000001028f2c0f undetected_chromedriver + 5893135
+15  undetected_chromedriver             0x00000001028b8d24 undetected_chromedriver + 5655844
+16  undetected_chromedriver             0x0000000102915df8 undetected_chromedriver + 6036984
+17  undetected_chromedriver             0x0000000102915fc0 undetected_chromedriver + 6037440
+18  undetected_chromedriver             0x0000000102928461 undetected_chromedriver + 6112353
+19  libsystem_pthread.dylib             0x00007ff81afdadf1 _pthread_start + 99
+20  libsystem_pthread.dylib             0x00007ff81afd6857 thread_start + 15
+
+2025-07-05 17:25:24,937 - INFO - =============================================
+2025-07-05 17:25:24,937 - INFO - Voting cycle #1 completed.
+2025-07-05 17:25:24,937 - INFO - Successful votes: 0/1
+2025-07-05 17:25:24,937 - INFO - Current stats: {'total_attempts': 1, 'successful_votes': 0, 'failed_votes': 1}
+2025-07-05 17:25:24,937 - INFO - =============================================
+2025-07-05 17:26:29,077 - INFO - =============================================
+2025-07-05 17:26:29,077 - INFO - Voting bot stopped by user
+2025-07-05 17:26:29,078 - INFO - Final stats: {'total_attempts': 1, 'successful_votes': 0, 'failed_votes': 1}
+2025-07-05 17:26:29,078 - INFO - =============================================

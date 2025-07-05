@@ -51,9 +51,9 @@ class VotingBot:
         self.total_attempts = 0
         self.running = True
         # Create screenshot directory
-        self.screenshot_dir = "screenshots"
-        if not os.path.exists(self.screenshot_dir):
-            os.makedirs(self.screenshot_dir)
+        # self.screenshot_dir = "screenshots"
+        # if not os.path.exists(self.screenshot_dir):
+        #     os.makedirs(self.screenshot_dir)
         logging.debug("VotingBot initialized")
 
     def setup_browser(self):
@@ -111,7 +111,7 @@ class VotingBot:
         logging.debug(f"--- DEBUG {step_name} ---")
         logging.debug(f"Current URL: {driver.current_url}")
         logging.debug(f"Page title: {driver.title}")
-        self.take_screenshot(driver, f"debug-{step_name}")
+        # self.take_screenshot(driver, f"debug-{step_name}")
         
         # Log page source to a file (helpful for debugging HTML elements)
         source_dir = "page_sources"
@@ -467,7 +467,7 @@ def run_bot():
     print("=============================================")
     print("Bot is running. Press Ctrl+C to stop.")
     print("Check the logs directory for detailed logs.")
-    print("Check the screenshots directory for visual debugging.")
+    # print("Check the screenshots directory for visual debugging.")
     print("=============================================")
     
     try:

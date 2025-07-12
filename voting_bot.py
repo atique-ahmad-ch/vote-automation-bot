@@ -2,23 +2,24 @@ import logging
 import threading
 import time
 from faker import Faker
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 import undetected_chromedriver as uc
 import schedule
 import random
 import os
 
-# Launch browser in undetected mode
 options = uc.ChromeOptions()
+options.add_argument("--headless=new")  # Use new headless mode (better for automation)
 options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--disable-blink-features=AutomationControlled")
-driver = uc.Chrome(options=options)
+options.add_argument("--window-size=1920,1080")  # Optional for layout consistency
 
+# Force matching ChromeDriver version (adjust if needed)
+driver = uc.Chrome(options=options, version_main=137, headless=True )
+print("Headless:", driver.execute_script("return navigator.webdriver"))
 
 fake = Faker('de_DE')  # German locale for relevant data
 
@@ -50,9 +51,9 @@ class VotingBot:
         self.total_attempts = 0
         self.running = True
         # Create screenshot directory
-        self.screenshot_dir = "screenshots"
-        if not os.path.exists(self.screenshot_dir):
-            os.makedirs(self.screenshot_dir)
+        # self.screenshot_dir = "screenshots"
+        # if not os.path.exists(self.screenshot_dir):
+        #     os.makedirs(self.screenshot_dir)
         logging.debug("VotingBot initialized")
 
     def setup_browser(self):
@@ -81,7 +82,12 @@ class VotingBot:
 
         try:
             logging.debug("Launching undetected Chrome WebDriver...")
-            driver = uc.Chrome(options=options, use_subprocess=True)
+            driver = uc.Chrome(
+                options=options,
+                version_main=137,       # Match your installed Chrome version
+                headless=True,          # Ensures actual headless behavior
+                use_subprocess=True     # Optional; can help isolate the browser process
+            )            
             logging.debug("Browser setup successful")
             return driver
         except Exception as e:
@@ -105,7 +111,7 @@ class VotingBot:
         logging.debug(f"--- DEBUG {step_name} ---")
         logging.debug(f"Current URL: {driver.current_url}")
         logging.debug(f"Page title: {driver.title}")
-        self.take_screenshot(driver, f"debug-{step_name}")
+        # self.take_screenshot(driver, f"debug-{step_name}")
         
         # Log page source to a file (helpful for debugging HTML elements)
         source_dir = "page_sources"
@@ -461,7 +467,7 @@ def run_bot():
     print("=============================================")
     print("Bot is running. Press Ctrl+C to stop.")
     print("Check the logs directory for detailed logs.")
-    print("Check the screenshots directory for visual debugging.")
+    # print("Check the screenshots directory for visual debugging.")
     print("=============================================")
     
     try:
